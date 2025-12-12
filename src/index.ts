@@ -93,6 +93,28 @@ app.post('/api/execute-sponsored-transaction', async (req: Request, res: Respons
     }
 });
 
+
+// Verification Endpoint (Step 3)
+import { verifyUserInteraction } from './services/verification';
+
+app.post('/api/verify-user', async (req: Request, res: Response) => {
+    try {
+        const { userAddress, dappId, packageId } = req.body;
+
+        if (!userAddress || !dappId) {
+            return res.status(400).json({ error: 'userAddress and dappId are required' });
+        }
+
+        const result = await verifyUserInteraction(userAddress, dappId, packageId);
+
+        res.json(result);
+
+    } catch (error: any) {
+        console.error('Verification endpoint error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`🚀 Enoki backend server running on port ${PORT}`);
